@@ -1,4 +1,4 @@
-# Nibin — Cinematic Portfolio Hero
+#  Cinematic Portfolio Hero
 
 A standalone React + Vite landing page with a procedural neon-green data-field background.
 
