@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>[YOUR NAME] — [YOUR ROLE]</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #010402;
+      --accent: #2eff60;
+      --accent-rgb: 46, 255, 96;
+      --text: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.8);
+      --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* IMPORTANT: Keep body transparent so z-index: -1 stack remains visible */
+    body {
+      background: transparent;
+      min-height: 100svh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Background Stack */
+    .bg-stack {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+      background-color: var(--bg);
+    }
+
+    .bg-poster {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 1;
+      transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .bg-poster.is-hidden {
+      opacity: 0;
+    }
+
+    #neon-field {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .bg-scanlines {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0) 0px,
+        rgba(255, 255, 255, 0) 2px,
+        rgba(0, 0, 0, 0.22) 3px,
+        rgba(0, 0, 0, 0.22) 4px
+      );
+      opacity: 0.45;
+    }
+
+    .bg-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at 50% 50%,
+        rgba(1, 4, 2, 0) 42%,
+        rgba(1, 4, 2, 0.72) 100%
+      );
+    }
+
+    /* Minimal Navigation */
+    .site-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem clamp(1.25rem, 4vw, 3.5rem);
+    }
+
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .nav-logo-mark {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2.25rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    @media (max-width: 640px) {
+      .nav-links li:not(:last-child) {
+        display: none;
+      }
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5.5rem clamp(1.25rem, 4vw, 3rem) 4rem;
+    }
+
+    /* Dark radial scrim behind hero text block for guaranteed WCAG AA contrast */
+    .hero-scrim {
+      position: relative;
+      max-width: 1120px;
+      width: 100%;
+      padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 3vw, 2.5rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-scrim::before {
+      content: "";
+      position: absolute;
+      inset: -18% -12%;
+      z-index: -1;
+      background: radial-gradient(
+        ellipse 62% 56% at 50% 50%,
+        rgba(1, 4, 2, 0.88) 0%,
+        rgba(1, 4, 2, 0.65) 52%,
+        rgba(1, 4, 2, 0) 100%
+      );
+      pointer-events: none;
+    }
+
+    /* Eyebrow Tag */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.42rem 0.95rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(1, 4, 2, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(14px);
+      animation: fadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+    }
+
+    .eyebrow-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* Headline */
+    .hero-title {
+      font-size: clamp(3.1rem, 10.5vw, 9.6rem);
+      line-height: 0.96;
+      letter-spacing: -0.04em;
+      color: #ffffff;
+      margin-bottom: 1.5rem;
+      user-select: none;
+    }
+
+    .hero-line {
+      display: block;
+    }
+
+    .hero-line-1 {
+      font-weight: 300;
+    }
+
+    .hero-line-2 {
+      font-weight: 700;
+    }
+
+    .char {
+      display: inline-block;
+      opacity: 0;
+      filter: blur(14px);
+      transform: translateY(0.25em);
+      animation: charReveal 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: calc(0.18s + var(--char-index, 0) * 55ms);
+      will-change: transform, opacity, filter;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 0.08em;
+      height: 0.82em;
+      margin-left: 0.08em;
+      vertical-align: -0.04em;
+      background-color: var(--accent);
+      box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.85);
+      animation: cursorBlink 1.05s steps(2, start) infinite;
+    }
+
+    /* One-line Intro */
+    .hero-intro {
+      max-width: 58ch;
+      font-size: clamp(1rem, 1.6vw, 1.25rem);
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.82);
+      margin-bottom: 2.25rem;
+      opacity: 0;
+      transform: translateY(14px);
+      animation: fadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards;
+    }
+
+    /* Buttons */
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      opacity: 0;
+      transform: translateY(14px);
+      animation: fadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.7s forwards;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.9rem 1.85rem;
+      border-radius: 999px;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.25s ease,
+                  background-color 0.25s ease,
+                  border-color 0.25s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: #010402;
+      border: 1px solid var(--accent);
+      box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 32px rgba(var(--accent-rgb), 0.6);
+    }
+
+    .btn-secondary {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      background-color: rgba(255, 255, 255, 0.11);
+      border-color: rgba(255, 255, 255, 0.42);
+    }
+
+    /* Scroll Cue */
+    .scroll-cue {
+      position: absolute;
+      bottom: 1.75rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.45rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.55);
+      opacity: 0;
+      animation: fadeIn 0.8s ease 0.95s forwards;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 26px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+    }
+
+    /* Content Sections Below Hero */
+    .section {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 6rem clamp(1.25rem, 4vw, 3rem);
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .section-heading {
+      font-size: clamp(1.85rem, 4vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 2.5rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      padding: 1.75rem;
+      border-radius: 16px;
+      background: rgba(1, 4, 2, 0.74);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: border-color 0.25s ease, transform 0.25s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(var(--accent-rgb), 0.45);
+      transform: translateY(-3px);
+    }
+
+    .card-meta {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.55);
+      margin-bottom: 0.75rem;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.65rem;
+    }
+
+    .card-desc {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .site-footer {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 3rem clamp(1.25rem, 4vw, 3rem) 4rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    @keyframes charReveal {
+      to {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes cursorBlink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    /* Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .char, .eyebrow, .hero-intro, .hero-actions, .scroll-cue {
+        opacity: 1 !important;
+        filter: none !important;
+        transform: none !important;
+      }
+      .cursor {
+        animation: none !important;
+        opacity: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed Full-Viewport Procedural Background Stack -->
+  <div class="bg-stack" aria-hidden="true">
+    <img
+      id="bg-poster"
+      class="bg-poster"
+      src="./assets/poster.png"
+      alt=""
+      onerror="this.style.display='none'"
+    />
+    <canvas id="neon-field"></canvas>
+    <div class="bg-scanlines"></div>
+    <div class="bg-vignette"></div>
+  </div>
+
+  <!-- Minimal Top Navigation -->
+  <header class="site-nav">
+    <a href="#" class="nav-logo">
+      <span class="nav-logo-mark"></span>
+      <span>[YOUR NAME]</span>
+    </a>
+    <nav aria-label="Primary Navigation">
+      <ul class="nav-links">
+        <li><a href="#work">Work</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Full-Viewport Hero -->
+  <main>
+    <section class="hero" aria-label="Introduction">
+      <div class="hero-scrim">
+        <div class="eyebrow">
+          <span class="eyebrow-dot"></span>
+          <span>[YOUR ROLE]</span>
+        </div>
+
+        <h1 class="hero-title" id="hero-title">
+          <span class="hero-line hero-line-1" data-split> Hi there...</span>
+          <span class="hero-line hero-line-2"><span data-split>It's Nibin</span><span class="cursor" aria-hidden="true"></span></span>
+        </h1>
+
+        <p class="hero-intro">[SHORT TAGLINE]</p>
+
+        <div class="hero-actions">
+          <a href="#work" class="btn btn-primary">[PRIMARY CTA]</a>
+          <a href="#contact" class="btn btn-secondary">[SECONDARY CTA]</a>
+        </div>
+      </div>
+
+      <div class="scroll-cue" aria-hidden="true">
+        <span>Scroll</span>
+        <span class="scroll-line"></span>
+      </div>
+    </section>
+
+    <!-- Selected Work Section -->
+    <section id="work" class="section">
+      <div class="section-label">01 // Selected Work</div>
+      <h2 class="section-heading">Featured Systems &amp; Interfaces</h2>
+      <div class="grid">
+        <article class="card">
+          <div class="card-meta">2026 &mdash; ARCHITECTURE</div>
+          <h3 class="card-title">Telemetry Core Engine</h3>
+          <p class="card-desc">Real-time distributed event pipeline processing sub-millisecond sensor streams with zero-allocation buffers.</p>
+        </article>
+        <article class="card">
+          <div class="card-meta">2025 &mdash; DESIGN SYSTEMS</div>
+          <h3 class="card-title">Kinetic UI Primitives</h3>
+          <p class="card-desc">Accessible, GPU-composited interface components built for high-density developer consoles.</p>
+        </article>
+        <article class="card">
+          <div class="card-meta">2025 &mdash; GRAPHICS</div>
+          <h3 class="card-title">Procedural Field Renderer</h3>
+          <p class="card-desc">Custom 2D/WebGL particle simulation framework engineered for 120fps playback across desktop and mobile.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+      <div class="section-label">02 // Profile</div>
+      <h2 class="section-heading">Engineering at the Intersection of Speed &amp; Craft</h2>
+      <div class="card">
+        <p class="card-desc">
+          Focused on resilient software architecture, low-latency interfaces, and expressive visual systems. Replace this summary with your background, core stack, and current focus.
+        </p>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+      <div class="section-label">03 // Connect</div>
+      <h2 class="section-heading">Initiate Transmission</h2>
+      <div class="card">
+        <p class="card-desc" style="margin-bottom: 1.25rem;">
+          Available for select engineering leadership roles, advisory engagements, and technical collaborations.
+        </p>
+        <a href="mailto:hello@example.com" class="btn btn-primary">hello@example.com</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>&copy; 2026 [YOUR NAME]</span>
+    <span>SYS.STATUS: ONLINE</span>
+  </footer>
+
+  <script>
+    // 1. Per-character split for staggered blur-in headline
+    (function splitHeadline() {
+      const targets = document.querySelectorAll('[data-split]');
+      let globalIndex = 0;
+      targets.forEach((el) => {
+        const text = el.textContent;
+        el.textContent = '';
+        for (const ch of text) {
+          const span = document.createElement('span');
+          span.className = 'char';
+          span.style.setProperty('--char-index', globalIndex++);
+          span.textContent = ch === ' ' ? '\u00A0' : ch;
+          el.appendChild(span);
+        }
+      });
+    })();
+
+    // 2. Procedural Neon Data Field Engine
+    function createNeonField(canvas, options = {}) {
+      const ctx = canvas.getContext('2d', { alpha: false });
+      const rgb = options.rgb || [46, 255, 96];
+      const baseDensity = options.density ?? 1;
+      const parallaxStrength = options.parallax ?? 0.016; // < 2% screen width
+
+      const [r, g, b] = rgb;
+      const rgba = (a) => `rgba(${r},${g},${b},${a})`;
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const MAX_PIXELS = 8600000; // ~8.6M ultra-HD safe cap
+
+      let width = 0;
+      let height = 0;
+      let dpr = 1;
+      let isVisible = true;
+      let isTabActive = !document.hidden;
+      let rafId = null;
+      let lastTime = 0;
+      let destroyed = false;
+
+      // Adaptive quality state
+      let bloomEnabled = true;
+      let particleScale = 1.0;
+      let frameTimeEma = 16.6;
+      let qualityCheckTimer = 0;
+
+      // Mouse parallax (lerped)
+      let targetMouseX = 0;
+      let targetMouseY = 0;
+      let mouseX = 0;
+      let mouseY = 0;
+
+      // Offscreen bloom canvas (1/5 scale)
+      const bloomCanvas = document.createElement('canvas');
+      const bloomCtx = bloomCanvas.getContext('2d');
+
+      // Pre-rendered radial gradient sprites
+      function createGlowSprite(size, innerAlpha) {
+        const c = document.createElement('canvas');
+        c.width = size;
+        c.height = size;
+        const cctx = c.getContext('2d');
+        const half = size / 2;
+        const grad = cctx.createRadialGradient(half, half, 0, half, half, half);
+        grad.addColorStop(0, rgba(innerAlpha));
+        grad.addColorStop(0.35, rgba(innerAlpha * 0.45));
+        grad.addColorStop(1, rgba(0));
+        cctx.fillStyle = grad;
+        cctx.fillRect(0, 0, size, size);
+        return c;
+      }
+
+      const discSprite = createGlowSprite(64, 0.55);
+      const pillSprite = createGlowSprite(128, 0.42);
+      const cloverSprite = createGlowSprite(48, 0.5);
+
+      // Code snippet pool
+      const CODE_SNIPPETS = [
+        [
+          'const stream = new DataBus({',
+          '  bufferSize: 4096,',
+          '  zeroCopy: true,',
+          '  onFrame: (pkt) => sync(pkt)',
+          '});'
+        ],
+        [
+          'public async Task<Node> RouteAsync(',
+          '  Span<byte> payload, CancellationToken ct)',
+          '{',
+          '  return await _mesh.Dispatch(payload);',
+          '}'
+        ],
+        [
+          'SELECT node_id, latency_ms, status',
+          'FROM telemetry_shards',
+          'WHERE region = \'us-east\' AND active = 1',
+          'ORDER BY throughput DESC LIMIT 32;'
+        ],
+        [
+          '#!/usr/bin/env bash',
+          'kubectl rollout status deploy/core-net',
+          'ss -tunap | grep ESTABLISHED | wc -l',
+          'echo "[OK] Mesh synchronized"'
+        ],
+        [
+          'function project3D(p, fov, cx, cy) {',
+          '  const s = fov / (fov + p.z);',
+          '  return { x: cx + p.x * s, y: cy + p.y * s };',
+          '}'
+        ],
+        [
+          'export const clamp = (v, min, max) =>',
+          '  v < min ? min : v > max ? max : v;'
+        ]
+      ];
+
+      // Pre-render code fragment canvases
+      function renderCodeCanvas(lines, fontSize) {
+        const lineHeight = Math.round(fontSize * 1.42);
+        const maxChars = Math.max(...lines.map((l) => l.length));
+        const cw = Math.ceil(maxChars * fontSize * 0.64 + 16);
+        const ch = Math.ceil(lines.length * lineHeight + 12);
+        const c = document.createElement('canvas');
+        c.width = cw;
+        c.height = ch;
+        const cctx = c.getContext('2d');
+        cctx.font = `500 ${fontSize}px "JetBrains Mono", monospace`;
+        cctx.textBaseline = 'top';
+        cctx.fillStyle = rgba(1);
+        lines.forEach((line, idx) => {
+          cctx.fillText(line, 4, 4 + idx * lineHeight);
+        });
+        return c;
+      }
+
+      // Scene state containers
+      let verticalStreams = [];
+      let particles = [];
+      let gridMarkers = [];
+      let codeFragments = [];
+      let counterState = { value: 482910, timer: 0 };
+
+      function spawnCodeFragment(initialProgress = false) {
+        const isLarge = Math.random() < 0.16;
+        const snippet = CODE_SNIPPETS[Math.floor(Math.random() * CODE_SNIPPETS.length)];
+        const fontSize = isLarge ? Math.max(18, Math.round(width * 0.016)) : Math.max(10, Math.round(width * 0.0075));
+        const sprite = renderCodeCanvas(snippet, fontSize);
+        const marginX = width * 0.06;
+        const marginY = height * 0.08;
+        return {
+          sprite,
+          x: marginX + Math.random() * Math.max(10, width - marginX * 2 - sprite.width),
+          y: marginY + Math.random() * Math.max(10, height - marginY * 2 - sprite.height),
+          isLarge,
+          maxAlpha: isLarge ? 0.14 : 0.42,
+          phase: initialProgress ? Math.random() * 7 : 0, // 0..2.2 type-in, 2.2..5.2 hold, 5.2..6.8 fade
+          speed: 0.7 + Math.random() * 0.5
+        };
+      }
+
+      function initScene() {
+        // Layer 4: 15-20 vertical dotted streams
+        const streamCount = 18;
+        verticalStreams = [];
+        for (let i = 0; i < streamCount; i++) {
+          const normX = (i + 0.5) / streamCount + (Math.random() - 0.5) * 0.03;
+          verticalStreams.push({
+            x: normX * width,
+            speed: 22 + Math.random() * 38,
+            offset: Math.random() * 100,
+            spacing: Math.max(12, height / 46),
+            alpha: 0.25 + Math.random() * 0.35
+          });
+        }
+
+        // Layer 5: 1,500-2,000 dust particles (70% clustered near central band)
+        const targetCount = Math.round(1750 * baseDensity * particleScale);
+        particles = [];
+        for (let i = 0; i < targetCount; i++) {
+          const clustered = i < targetCount * 0.7;
+          // Gaussian-like spread around center
+          const spreadX = clustered ? (Math.random() + Math.random() + Math.random() - 1.5) * 0.65 : (Math.random() - 0.5) * 2.2;
+          const spreadY = clustered ? (Math.random() + Math.random() + Math.random() - 1.5) * 0.34 : (Math.random() - 0.5) * 2.0;
+          particles.push({
+            bx: spreadX * (width * 0.5),
+            by: spreadY * (height * 0.5),
+            z: Math.random(), // 1 = far, 0 = camera
+            vz: 0.045 + Math.random() * 0.09,
+            clustered
+          });
+        }
+
+        // Layer 6: Grid of small "+" markers and diamond dots
+        gridMarkers = [];
+        const cols = Math.max(8, Math.round(width / 150));
+        const rows = Math.max(5, Math.round(height / 140));
+        for (let gx = 1; gx < cols; gx++) {
+          for (let gy = 1; gy < rows; gy++) {
+            if (Math.random() < 0.58) {
+              gridMarkers.push({
+                x: (gx / cols) * width,
+                y: (gy / rows) * height,
+                isPlus: (gx + gy) % 2 === 0,
+                phase: Math.random() * Math.PI * 2
+              });
+            }
+          }
+        }
+
+        // Layer 7: 6-8 code fragments
+        codeFragments = [];
+        for (let i = 0; i < 7; i++) {
+          codeFragments.push(spawnCodeFragment(true));
+        }
+      }
+
+      function resize() {
+        const rect = canvas.getBoundingClientRect();
+        const cssW = Math.max(1, rect.width);
+        const cssH = Math.max(1, rect.height);
+        const rawDpr = Math.min(window.devicePixelRatio || 1, 2);
+        const rawPixels = cssW * rawDpr * cssH * rawDpr;
+        const scaleDown = rawPixels > MAX_PIXELS ? Math.sqrt(MAX_PIXELS / rawPixels) : 1;
+
+        dpr = rawDpr * scaleDown;
+        width = Math.round(cssW * dpr);
+        height = Math.round(cssH * dpr);
+
+        canvas.width = width;
+        canvas.height = height;
+
+        bloomCanvas.width = Math.max(1, Math.floor(width / 5));
+        bloomCanvas.height = Math.max(1, Math.floor(height / 5));
+
+        initScene();
+        if (reducedMotion) {
+          renderFrame(0.016, 0);
+        }
+      }
+
+      function renderFrame(dt, elapsed) {
+        const cx = width * 0.5;
+        const cy = height * 0.5;
+
+        // Smooth mouse parallax
+        mouseX += (targetMouseX - mouseX) * Math.min(1, dt * 5);
+        mouseY += (targetMouseY - mouseY) * Math.min(1, dt * 5);
+        const pxOffset = mouseX * width * parallaxStrength;
+        const pyOffset = mouseY * height * parallaxStrength;
+
+        // Layer 1: Near-black fill (#010402)
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#010402';
+        ctx.fillRect(0, 0, width, height);
+
+        // Additive blending for neon layers
+        ctx.globalCompositeOperation = 'lighter';
+
+        // Layer 2: Soft horizontal haze at central band + faint radial lines at center
+        const hazeGrad = ctx.createLinearGradient(0, cy - height * 0.32, 0, cy + height * 0.32);
+        hazeGrad.addColorStop(0, rgba(0));
+        hazeGrad.addColorStop(0.5, rgba(0.085));
+        hazeGrad.addColorStop(1, rgba(0));
+        ctx.fillStyle = hazeGrad;
+        ctx.fillRect(0, cy - height * 0.32, width, height * 0.64);
+
+        ctx.strokeStyle = rgba(0.035);
+        ctx.lineWidth = Math.max(1, dpr);
+        ctx.beginPath();
+        const radialRays = 20;
+        const maxRad = Math.hypot(cx, cy);
+        for (let i = 0; i < radialRays; i++) {
+          const ang = (i / radialRays) * Math.PI * 2;
+          ctx.moveTo(cx + pxOffset * 0.3, cy + pyOffset * 0.3);
+          ctx.lineTo(cx + Math.cos(ang) * maxRad, cy + Math.sin(ang) * maxRad);
+        }
+        ctx.stroke();
+
+        // Layer 3: 2-3 faint dotted horizontal rows spanning width, fading toward edges
+        const rowYs = [cy - height * 0.14, cy, cy + height * 0.14];
+        const dotStep = Math.max(12, Math.round(16 * dpr));
+        for (let rIdx = 0; rIdx < rowYs.length; rIdx++) {
+          const ry = rowYs[rIdx] + pyOffset * 0.4;
+          for (let x = dotStep; x < width - dotStep; x += dotStep) {
+            const edgeFade = 1 - Math.abs(x - cx) / cx;
+            if (edgeFade <= 0.02) continue;
+            ctx.fillStyle = rgba(edgeFade * 0.16);
+            ctx.fillRect(x + pxOffset * 0.4, ry, 2 * dpr, 2 * dpr);
+          }
+        }
+
+        // Layer 4: 15-20 vertical dotted streams (grow larger toward bottom, fade at ends)
+        for (let i = 0; i < verticalStreams.length; i++) {
+          const st = verticalStreams[i];
+          st.offset = (st.offset + st.speed * dt) % st.spacing;
+          const sx = st.x + pxOffset * 0.55;
+          for (let y = st.offset; y < height; y += st.spacing) {
+            const normY = y / height;
+            const endFade = Math.sin(normY * Math.PI);
+            const dotSize = (1 + normY * 2.2) * dpr;
+            ctx.fillStyle = rgba(st.alpha * endFade);
+            ctx.fillRect(sx, y, dotSize, dotSize);
+          }
+        }
+
+        // Layer 5: 1,500-2,000 3D depth dust particles
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.z -= p.vz * dt;
+          if (p.z <= 0.04) {
+            p.z = 1.0;
+          }
+          const perspective = 1 / (0.25 + p.z * 1.35);
+          const sx = cx + p.bx * perspective + pxOffset * perspective;
+          const sy = cy + p.by * perspective + pyOffset * perspective;
+
+          if (sx < 0 || sx > width || sy < 0 || sy > height) continue;
+
+          const edgeDist = Math.hypot((sx - cx) / cx, (sy - cy) / cy);
+          const edgeFade = Math.max(0, 1 - edgeDist * 0.82);
+          const depthAlpha = (1 - p.z) * 0.72 * edgeFade;
+          if (depthAlpha <= 0.02) continue;
+
+          const sz = Math.max(1, (1 - p.z) * 2.6 * dpr);
+          ctx.fillStyle = rgba(depthAlpha);
+          ctx.fillRect(sx, sy, sz, sz);
+        }
+
+        // Layer 6: Grid of small "+" markers and diamond dots, pulsing gently
+        ctx.lineWidth = Math.max(1, dpr);
+        for (let i = 0; i < gridMarkers.length; i++) {
+          const m = gridMarkers[i];
+          const pulse = 0.08 + 0.1 * (0.5 + 0.5 * Math.sin(elapsed * 1.6 + m.phase));
+          const mx = m.x + pxOffset * 0.65;
+          const my = m.y + pyOffset * 0.65;
+          const arm = 3.5 * dpr;
+          ctx.strokeStyle = rgba(pulse);
+          ctx.fillStyle = rgba(pulse);
+          if (m.isPlus) {
+            ctx.beginPath();
+            ctx.moveTo(mx - arm, my);
+            ctx.lineTo(mx + arm, my);
+            ctx.moveTo(mx, my - arm);
+            ctx.lineTo(mx, my + arm);
+            ctx.stroke();
+          } else {
+            ctx.beginPath();
+            ctx.moveTo(mx, my - arm * 0.8);
+            ctx.lineTo(mx + arm * 0.8, my);
+            ctx.lineTo(mx, my + arm * 0.8);
+            ctx.lineTo(mx - arm * 0.8, my);
+            ctx.closePath();
+            ctx.fill();
+          }
+        }
+
+        // Layer 7: 6-8 code fragments (type-in top-to-bottom, hold, fade, respawn)
+        for (let i = 0; i < codeFragments.length; i++) {
+          const cf = codeFragments[i];
+          cf.phase += dt * cf.speed;
+          if (cf.phase > 6.8) {
+            codeFragments[i] = spawnCodeFragment(false);
+            continue;
+          }
+          let revealRatio = 1;
+          let alpha = cf.maxAlpha;
+          if (cf.phase < 2.2) {
+            revealRatio = cf.phase / 2.2;
+          } else if (cf.phase > 5.2) {
+            alpha = cf.maxAlpha * (1 - (cf.phase - 5.2) / 1.6);
+          }
+          const sh = Math.max(1, Math.floor(cf.sprite.height * revealRatio));
+          const sw = cf.sprite.width;
+          const pScale = cf.isLarge ? 1.25 : 0.8;
+          ctx.globalAlpha = Math.max(0, alpha);
+          ctx.drawImage(
+            cf.sprite,
+            0, 0, sw, sh,
+            cf.x + pxOffset * pScale,
+            cf.y + pyOffset * pScale,
+            sw, sh
+          );
+        }
+        ctx.globalAlpha = 1;
+
+        // Layer 8: Small glowing counter chip near center with ticking digits
+        counterState.timer += dt;
+        if (counterState.timer >= 0.08) {
+          counterState.value = (counterState.value + Math.floor(1 + Math.random() * 19)) % 999999;
+          counterState.timer = 0;
+        }
+        const chipW = 92 * dpr;
+        const chipH = 22 * dpr;
+        const chipX = cx - chipW / 2 + pxOffset * 0.75;
+        const chipY = cy + height * 0.23 + pyOffset * 0.75;
+        ctx.strokeStyle = rgba(0.28);
+        ctx.fillStyle = rgba(0.06);
+        ctx.fillRect(chipX, chipY, chipW, chipH);
+        ctx.strokeRect(chipX, chipY, chipW, chipH);
+        ctx.font = `600 ${Math.round(10 * dpr)}px "JetBrains Mono", monospace`;
+        ctx.fillStyle = rgba(0.55);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`SYS // ${String(counterState.value).padStart(6, '0')}`, chipX + chipW / 2, chipY + chipH / 2);
+
+        // Layer 9: Foreground bokeh (soft discs near bottom, top/bottom center pills, 4-dot clover glows in bottom corners)
+        const discCount = 7;
+        for (let i = 0; i < discCount; i++) {
+          const dx = ((i + 0.5) / discCount) * width + pxOffset * 1.1;
+          const dy = height * 0.91 + Math.sin(elapsed * 0.7 + i) * 8 * dpr;
+          const ds = (46 + (i % 3) * 18) * dpr;
+          ctx.drawImage(discSprite, dx - ds / 2, dy - ds / 2, ds, ds);
+        }
+
+        // Top and bottom center pills
+        const pillW = 190 * dpr;
+        const pillH = 26 * dpr;
+        ctx.drawImage(pillSprite, cx - pillW / 2, height * 0.04 - pillH / 2, pillW, pillH);
+        ctx.drawImage(pillSprite, cx - pillW / 2, height * 0.96 - pillH / 2, pillW, pillH);
+
+        // Four-dot clover glows in bottom corners
+        const corners = [
+          [width * 0.055, height * 0.91],
+          [width * 0.945, height * 0.91]
+        ];
+        const cOff = 11 * dpr;
+        const cSize = 24 * dpr;
+        corners.forEach(([bx, by]) => {
+          const offsets = [[-cOff, 0], [cOff, 0], [0, -cOff], [0, cOff]];
+          offsets.forEach(([ox, oy]) => {
+            ctx.drawImage(cloverSprite, bx + ox - cSize / 2, by + oy - cSize / 2, cSize, cSize);
+          });
+        });
+
+        // Layer 10: Two large crosshairs symmetrically near left and right edges
+        const chArm = 26 * dpr;
+        const chGap = 7 * dpr;
+        const chRad = 15 * dpr;
+        ctx.strokeStyle = rgba(0.62);
+        ctx.lineWidth = Math.max(1.2, 1.5 * dpr);
+        [width * 0.075, width * 0.925].forEach((chX) => {
+          const x = chX + pxOffset * 0.9;
+          const y = cy + pyOffset * 0.9;
+          ctx.beginPath();
+          ctx.moveTo(x - chArm, y); ctx.lineTo(x - chGap, y);
+          ctx.moveTo(x + chGap, y); ctx.lineTo(x + chArm, y);
+          ctx.moveTo(x, y - chArm); ctx.lineTo(x, y - chGap);
+          ctx.moveTo(x, y + chGap); ctx.lineTo(x, y + chArm);
+          ctx.stroke();
+
+          ctx.strokeStyle = rgba(0.24);
+          ctx.beginPath();
+          ctx.arc(x, y, chRad, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.strokeStyle = rgba(0.62);
+        });
+
+        // Layer 11: Bloom (1/5 offscreen copy drawn back with lighter at ~0.75 alpha)
+        if (bloomEnabled && bloomCanvas.width > 0 && bloomCanvas.height > 0) {
+          bloomCtx.globalCompositeOperation = 'source-over';
+          bloomCtx.clearRect(0, 0, bloomCanvas.width, bloomCanvas.height);
+          bloomCtx.drawImage(canvas, 0, 0, bloomCanvas.width, bloomCanvas.height);
+
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.globalAlpha = 0.75;
+          ctx.drawImage(bloomCanvas, 0, 0, width, height);
+          ctx.globalAlpha = 1;
+        }
+      }
+
+      let elapsedTotal = 0;
+      function loop(now) {
+        if (destroyed) return;
+        if (!isVisible || !isTabActive) {
+          rafId = null;
+          return;
+        }
+
+        const rawDt = lastTime ? (now - lastTime) / 1000 : 0.016;
+        lastTime = now;
+        const dt = Math.min(rawDt, 0.05); // clamped delta time
+        elapsedTotal += dt;
+
+        const t0 = performance.now();
+        renderFrame(dt, elapsedTotal);
+        const frameCost = performance.now() - t0;
+
+        // Adaptive quality monitor
+        frameTimeEma = frameTimeEma * 0.92 + frameCost * 0.08;
+        qualityCheckTimer += dt;
+        if (qualityCheckTimer > 2.0) {
+          qualityCheckTimer = 0;
+          if (frameTimeEma > 24 && bloomEnabled) {
+            bloomEnabled = false;
+          } else if (frameTimeEma > 28 && particleScale > 0.5) {
+            particleScale = 0.5;
+            initScene();
+          }
+        }
+
+        rafId = requestAnimationFrame(loop);
+      }
+
+      function startLoop() {
+        if (!destroyed && !reducedMotion && isVisible && isTabActive && rafId === null) {
+          lastTime = performance.now();
+          rafId = requestAnimationFrame(loop);
+        }
+      }
+
+      function onMouseMove(e) {
+        targetMouseX = (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1;
+        targetMouseY = (e.clientY / Math.max(1, window.innerHeight)) * 2 - 1;
+      }
+
+      function onVisibilityChange() {
+        isTabActive = !document.hidden;
+        if (isTabActive) startLoop();
+      }
+
+      const resizeObserver = new ResizeObserver(() => resize());
+      resizeObserver.observe(canvas);
+
+      const intersectionObserver = new IntersectionObserver(
+        (entries) => {
+          isVisible = entries[0]?.isIntersecting ?? true;
+          if (isVisible) startLoop();
+        },
+        { threshold: 0.01 }
+      );
+      intersectionObserver.observe(canvas);
+
+      window.addEventListener('mousemove', onMouseMove, { passive: true });
+      document.addEventListener('visibilitychange', onVisibilityChange);
+
+      resize();
+      if (reducedMotion) {
+        renderFrame(0.016, 0);
+      } else {
+        startLoop();
+      }
+
+      // Fade out fallback poster once canvas is running
+      const poster = document.getElementById('bg-poster');
+      if (poster) {
+        requestAnimationFrame(() => poster.classList.add('is-hidden'));
+      }
+
+      return {
+        destroy() {
+          destroyed = true;
+          if (rafId !== null) cancelAnimationFrame(rafId);
+          resizeObserver.disconnect();
+          intersectionObserver.disconnect();
+          window.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('visibilitychange', onVisibilityChange);
+        }
+      };
+    }
+
+    // Boot background
+    window.addEventListener('DOMContentLoaded', () => {
+      const canvas = document.getElementById('neon-field');
+      if (canvas) {
+        window.__neonField = createNeonField(canvas, {
+          rgb: [46, 255, 96],
+          density: 1,
+          parallax: 0.016
+        });
+      }
+    });
+  </script>
+</body>
+</html>
