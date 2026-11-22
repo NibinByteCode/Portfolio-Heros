@@ -1,4 +1,5 @@
 # Neon Hero Section
+<img width="1919" height="908" alt="Screenshot 2026-11-21 203425" src="https://github.com/user-attachments/assets/bb5d73a6-f691-4d35-b519-d05587227dd1" />
 
 Reusable **hero section** code for portfolio and landing-page projects: a procedural, ultra-smooth neon data-field background (HTML5 Canvas, no video) with a looping typewriter headline.
 
